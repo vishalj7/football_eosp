@@ -1,8 +1,20 @@
+##############################################################
+##                                                          ##
+##  Various functions for getting API data                  ##
+##                                                          ##
+##############################################################
+
+ # Libraries
 import requests
 import datetime
 import time 
+import pandas as pd
+import os
+from io import StringIO
 
-def make_api_call(date, max_tries=2, timeout=5):
+
+# Functions
+def make_api_call(date, max_tries=2, backoff_factor=1):
     """
     Calls the Club ELO API and returns the data. It checks if the provided date
     is valid and re-attmepts the API 2 more times, if there was an 
@@ -41,7 +53,14 @@ def make_api_call(date, max_tries=2, timeout=5):
             output = requests.get(str(elo_url))
             output.raise_for_status()
             elo_data = output.text
-            return elo_data
+            
+            if not isinstance(elo_data, str):
+                raise ValueError("Malformed API response: expected str")
+            
+            elo_data = StringIO(elo_data)           
+            elo_df = pd.read_csv(elo_data, sep=",") 
+
+            return elo_df
         except requests.exceptions.HTTPError as error_http:
             print("HTTP Error")
             print(error_http.args[0])
@@ -51,8 +70,32 @@ def make_api_call(date, max_tries=2, timeout=5):
             print("Connection error")
         except requests.exceptions.RequestException as error_ex:
             print("Exception request")
-            wait = timeout
+
+            wait = backoff_factor * (2 ** attempt)
+            print(f"Attempt {attempt+1} failed: {e}. Retrying in {wait:.1f}s...")
             time.sleep(wait)
             attempt += 1
+
     raise RuntimeError(f"Failed to fetch data after {max_tries} attempts.")
 
+
+def get_local_data():
+    """
+    Gets the local copy of the ELO API data and returns it as a dataframe.
+
+    Parameters
+    ----------
+    
+        
+    Returns
+    -------
+    elo_data : str
+        The output from the API call in a string format
+    """
+    
+    cwd = os.getcwd()
+    path = os.path.join(cwd, 'data', 'fallback_elo_data.csv')
+
+    elo_df = pd.read_csv(path, sep=",")
+
+    return elo_df
