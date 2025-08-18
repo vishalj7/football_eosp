@@ -33,8 +33,8 @@ def make_api_call(date, max_tries=2, backoff_factor=1):
         
     Returns
     -------
-    elo_data : str
-        The output from the API call in a string format
+    elo_data : Dataframe
+        The output from the API call in a Dataframe
     """
 
     elo_url = "http://api.clubelo.com/"
@@ -89,8 +89,8 @@ def get_local_data():
         
     Returns
     -------
-    elo_data : str
-        The output from the API call in a string format
+    elo_data : Dataframe
+        The output from the API call in a Dataframe
     """
     
     cwd = os.getcwd()
