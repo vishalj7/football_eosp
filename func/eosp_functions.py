@@ -11,31 +11,31 @@ import pandas as pd
 # Functions
 def get_fixture_list(data, country=None, level=None, custom=False, custom_teams=None):
     """
-    Calls the Club ELO API and returns the data. It checks if the provided date
-    is valid and re-attmepts the API 2 more times, if there was an 
-    exception. 
+    Gets and creates a fixture list based on the teams provided for a given country and 
+    level. If custom is set to True, it will create a fixture list based on the custom_teams provided. 
 
     Parameters
     ----------
-    date : str
-        A representing the date to use for the API call 
+    data : Dataframe
+        A Dataframe contain the ELO data, there must be a column called 'Club' and 'Elo'
 
     country : str
-        Maximum number of tries to call the API
+        Which country to create the fixture list for
 
     level : int
-        Level to indicate the tier of football league 
+        Which level to create the fixture list for 
 
     custom : boolean
         Set to True if you want a custom league
 
     custom_teams : list
-        A list of teams to form a custom league 
+        A list of teams to form a custom league. A list of teams must be provided if custom is set to True 
         
     Returns
     -------
-    elo_data : str
-        The output from the API call in a string format
+    team_fixtures : list
+        A list of fixtures for the teams in the league. Each fixture is a tuple of (home_team, away_team)
+        
     """
 
     if custom==True:
@@ -65,7 +65,7 @@ def create_fixture_list(list_of_teams):
     Returns
     -------
     fixtures : list
-        A list of fixtures of all the teams passed in. Each have a round robin
+        A list of fixtures for the teams in the league. Each fixture is a tuple of (home_team, away_team)
     """
 
     fixtures = []
@@ -79,6 +79,22 @@ def create_fixture_list(list_of_teams):
 
 
 def expected_points(data, fixtures):
+    """
+    Calculates the expected points for each team home and away
+
+    Parameters
+    ----------
+    data : Dataframe
+        A Dataframe contain the ELO data, there must be a column called 'Club' and 'Elo'
+
+    fixtures : list
+        A list of fixtures for the teams in the league. Each fixture is a tuple of (home_team, away_team)
+        
+    Returns
+    -------
+    fixtures : list
+        A list of fixtures of all the teams passed in. Each have a round robin
+    """
 
     fixtures_points = []
 
