@@ -50,7 +50,7 @@ def make_api_call(date, max_tries=2, backoff_factor=1):
     attempt = 0
     while attempt <max_tries:
         try:
-            output = requests.get(str(elo_url))
+            output = requests.get(str(elo_url), timeout=30)
             output.raise_for_status()
             elo_data = output.text
             
